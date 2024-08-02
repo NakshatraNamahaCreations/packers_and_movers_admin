@@ -32,6 +32,8 @@ const Order = require("./Router/Order");
 
 const Enquiry = require("./Router/enquiry");
 const FallowUp = require("./Router/fallowup");
+const Quote = require("./Router/fallowup");
+
 app.use("/api/cate", category);
 app.use("/api/subcate", subcategory);
 app.use("/api/service", service);
@@ -40,6 +42,8 @@ app.use("/api/item", ITems);
 app.use("/api/order", Order);
 app.use("/api/enquiry", Enquiry);
 app.use("/api/fallowup", FallowUp);
+app.use("/api/quote", Quote);
+
 const PORT = process.env.PORT || 8200;
 
 app.listen(PORT, () => {

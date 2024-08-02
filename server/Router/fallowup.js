@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  AddFallowup,
-  getFallowup,
-  updateFallowup,
-  TrashFallowup,
+  AddFallowUp,
+  getFallowUp,
+  updateFallowUp,
+  TrashFallowUp,
 } = require("../Controller/fallowup");
-router.post("/addfallowup", AddFallowup);
-router.get("/getfallowup", getFallowup);
-router.put("/update/:id", updateFallowup);
-router.post("/trash/:id", TrashFallowup);
+router.post("/addfallowup", AddFallowUp);
+router.get("/getfallowup", getFallowUp);
+router.put("/update/:id", updateFallowUp);
+router.post("/trash/:id", TrashFallowUp);
 
 module.exports = router;

@@ -35,4 +35,14 @@ export const ApiUrl = {
   UPDATENQUIRY: "/enquiry/update/",
   GETENQUIRY: "/enquiry/getenquiry",
   DELETEENQUIRY: "/enquiry/trash/",
+
+  ADDFALLOWUP: "/fallowup/addfallowup",
+  UPDATFALLOWUP: "/fallowup/update/",
+  GETFALLOWUP: "/fallowup/getfallowup",
+  DELETEFALLOWUP: "/fallowup/trash/",
+
+  ADDQUOTE: "/quote/addquote",
+  UPDATQUOTE: "/quote/update/",
+  GETQUOTE: "/quote/getquote",
+  DELETEQUOTE: "/quote/trash/",
 };

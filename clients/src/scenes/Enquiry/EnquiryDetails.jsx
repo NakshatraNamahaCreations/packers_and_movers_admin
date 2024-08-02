@@ -7,24 +7,65 @@ import { Card, Form } from "react-bootstrap";
 import EnquiryTab from "./EnquiryTab";
 import moment from "moment";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ApiUrl } from "../../ApiRUL";
+import { getData, postData } from "../../methods";
 
 const EnquiryDetails = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const location = useLocation();
   const ViewData = location.state || null;
-  console.log(ViewData, "ViewData");
-  const initialData = {
-    follDate: "Sat July 2024 3:24 PM",
-    staffname: "Pankaj",
-  };
-  const [Enquiry, setEnquiry] = useState(initialData);
 
+  let InitialData = {
+    desc: "",
+    amount: "",
+    response: "",
+  };
+  const [PayloadData, setPayloadData] = useState(InitialData);
+  const [Fallowup, setFallowup] = useState();
+  const [currentDate, setCurrentDate] = useState(new Date());
   const handleChange = (e) => {
     let { name, value } = e.target;
-    setEnquiry((prev) => ({ ...prev, [name]: value }));
+    setPayloadData((prev) => ({ ...prev, [name]: value }));
   };
 
+  useEffect(() => {
+    getFallowup();
+    const intervalId = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+  const handleAddData = async () => {
+    try {
+      const response = await postData(ApiUrl.ADDFALLOWUP, {
+        enquiryId: ViewData._id,
+        enquiryDate: currentDate,
+        desc: PayloadData.desc,
+        amount: PayloadData.amount,
+        response: PayloadData.response,
+      });
+
+      if (response.status === 200) {
+        alert(response.data.message);
+        setPayloadData(InitialData);
+        window.location.reload("");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
+  };
+
+  const getFallowup = async () => {
+    try {
+      const response = await getData(ApiUrl.GETFALLOWUP);
+
+      if (response.status === 200) {
+        setFallowup(response.data);
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
+  };
   return (
     <Box m="20px">
       <EnquiryTab />
@@ -151,32 +192,56 @@ const EnquiryDetails = () => {
               <div className="col-md-4 m-auto">
                 <Form.Label>Staff name</Form.Label>
                 <Form.Control
-                  defaultValue={Enquiry.staffname}
-                  placeholder="Staff name"
+                  value={ViewData.excutive}
+                  placeholder="Excutive name"
                   className="row m-auto mb-3"
                 />
               </div>{" "}
-              <div className="col-md-4 m-auto">
+              <div className="col-md-4 ">
                 <Form.Label>Foll date</Form.Label>
                 <Form.Control
-                  onChange={handleChange}
-                  value={"Sat July 2024 3:24 PM"}
+                  value={currentDate?.toLocaleDateString()}
                   className="row m-auto mb-3"
                 />
               </div>
-              <div className="col-md-4 m-auto">
+              <div className="col-md-4 ">
                 <Form.Label>Response</Form.Label>
-                <Form.Select className="row m-auto mb-3">
-                  <option>Not Interested</option>
-                  <option>Survey</option>
-                  <option>Confirmed</option>
-                  <option>Call Later</option>
-                  <option>New</option>
+                <Form.Select
+                  onChange={handleChange}
+                  value={PayloadData.response}
+                  name="response"
+                  className="row m-auto mb-3"
+                >
+                  <option>Select Response</option>
+                  <option value="Not Interested">Not Interested</option>
+                  <option value="Confirmed">Confirmed</option>
                 </Form.Select>
               </div>
+              <div className="col-md-4 ">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  onChange={handleChange}
+                  value={PayloadData.desc}
+                  name="desc"
+                  className="row m-auto mb-3"
+                />
+              </div>
+              {PayloadData.response === "Confirmed" && (
+                <div className="col-md-4 ">
+                  <Form.Label>Amount</Form.Label>
+                  <Form.Control
+                    onChange={handleChange}
+                    name="amount"
+                    value={PayloadData.amount}
+                    className="row m-auto mb-3"
+                  />
+                </div>
+              )}
             </div>
             <div className="row m-auto">
-              <button className="save p-2 col-md-2" >Save</button>
+              <button className="save p-2 col-md-2" onClick={handleAddData}>
+                Save
+              </button>
             </div>
           </Card>
           <div className="row mt-4">
@@ -188,29 +253,24 @@ const EnquiryDetails = () => {
                 <th className="th_t p-2 text-center">Response</th>
                 <th className="th_t p-2 text-center">Description</th>
                 <th className="th_t p-2 text-center">Value</th>
-                <th className="th_t p-2 text-center">Nxt Foll</th>
               </thead>
               <tbody>
-                <tr>
-                  {" "}
-                  <td className="p-2">1</td>
-                  <td className="p-2">Sat, Jul 27, 2024 3:15 PM</td>
-                  <td className="p-2">Hema</td>
-                  <td className="p-2">Confirmed</td>
-                  <td className="p-2">2bathroom</td>
-                  <td className="p-2">300</td>
-                  <td className="p-2">00/00/0000</td>
-                </tr>
-                <tr>
-                  {" "}
-                  <td className="p-2">2</td>
-                  <td className="p-2">Sat, Jul 27, 2024 3:15 PM</td>
-                  <td className="p-2">Hema</td>
-                  <td className="p-2">Confirmed</td>
-                  <td className="p-2">2bathroom</td>
-                  <td className="p-2">300</td>
-                  <td className="p-2">00/00/0000</td>
-                </tr>
+                {Fallowup?.map((ele, index) => {
+                  const formattedDate = moment(ele.enquiryDate).format(
+                    "ddd, MMM D, YYYY h:mm A"
+                  );
+                  return (
+                    <tr>
+                      {" "}
+                      <td className="p-2">{index + 1}</td>
+                      <td className="p-2">{formattedDate}</td>
+                      <td className="p-2">{ViewData?.excutive}</td>
+                      <td className="p-2">{ele.response}</td>
+                      <td className="p-2">{ele.desc}</td>
+                      <td className="p-2">{ele.amount}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

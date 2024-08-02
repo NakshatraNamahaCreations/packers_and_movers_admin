@@ -13,7 +13,7 @@ class FallowUp {
     } = req.body;
 
     try {
-      let subdata = new FallowUpModule({
+      let data = new FallowUpModule({
         enquiryId,
         enquiryDate,
         excutive,
@@ -23,7 +23,7 @@ class FallowUp {
         response,
       });
 
-      let FallowUpData = await subdata.save();
+      let FallowUpData = await data.save();
 
       if (FallowUpData) {
         return res.status(200).json({
@@ -90,7 +90,6 @@ class FallowUp {
       return res.status(500).json({ error: "Unable to update the FallowUp" });
     }
   }
-
 
   async TrashFallowUp(req, res) {
     let id = req.params.id;

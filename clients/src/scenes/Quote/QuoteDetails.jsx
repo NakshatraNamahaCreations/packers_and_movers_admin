@@ -16,7 +16,7 @@ const QuoteDetails = () => {
       <Header title="QUOTE" />
       <div className="row">
         <div className="enquir-tab">
-          <a href="/orderlist" className="enquiry-btn p-1 me-3">
+          <a href="/quotelist" className="enquiry-btn p-1 me-3">
             Quotelist
           </a>
 
